@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiagos Addon</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 4em;
+            color: #333;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .download-button {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tiagos Addon</h1>
+    <div id="buttonContainer" class="button-container"></div>
+
+    <script>
+        // Simulating a list of .mcaddon files in the same folder
+        // In a real server environment, you would use a backend to list files
+        const mcaddonFiles = [
+            'addon1.mcaddon',
+            'addon2.mcaddon',
+            'addon3.mcaddon'
+            // Add more .mcaddon files here or fetch dynamically from server
+        ];
+
+        const buttonContainer = document.getElementById('buttonContainer');
+
+        // Create a download button for each .mcaddon file
+        mcaddonFiles.forEach(file => {
+            const button = document.createElement('a');
+            button.href = `./${file}`;
+            button.download = file;
+            button.textContent = file;
+            button.className = 'download-button';
+            buttonContainer.appendChild(button);
+        });
+    </script>
+</body>
+</html>
