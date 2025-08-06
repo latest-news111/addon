@@ -46,26 +46,28 @@
     <div id="buttonContainer" class="button-container"></div>
 
     <script>
-        // Simulating a list of .mcaddon files in the same folder
-        // In a real server environment, you would use a backend to list files
-        const mcaddonFiles = [
-            'addon1.mcaddon',
-            'addon2.mcaddon',
-            'addon3.mcaddon'
-            // Add more .mcaddon files here or fetch dynamically from server
-        ];
-
-        const buttonContainer = document.getElementById('buttonContainer');
-
-        // Create a download button for each .mcaddon file
-        mcaddonFiles.forEach(file => {
-            const button = document.createElement('a');
-            button.href = `./${file}`;
-            button.download = file;
-            button.textContent = file;
-            button.className = 'download-button';
-            buttonContainer.appendChild(button);
-        });
+        // Fetch the list of .mcaddon files from files.json
+        fetch('./files.json')
+            .then(response => {
+                if (!response.ok) throw new Error('No .mcaddon files found');
+                return response.json();
+            })
+            .then(files => {
+                const buttonContainer = document.getElementById('buttonContainer');
+                files.forEach(file => {
+                    const button = document.createElement('a');
+                    button.href = `./${file}`;
+                    button.download = file;
+                    button.textContent = file.replace('.mcaddon', ''); // Remove .mcaddon from button text
+                    button.className = 'download-button';
+                    buttonContainer.appendChild(button);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching files:', error);
+                const buttonContainer = document.getElementById('buttonContainer');
+                buttonContainer.textContent = 'No .mcaddon files available.';
+            });
     </script>
 </body>
 </html>
