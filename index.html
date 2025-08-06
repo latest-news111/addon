@@ -1,73 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiagos Addon</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 4em;
-            color: #333;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .button-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-        }
-        .download-button {
-            background-color: #007BFF;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            text-decoration: none;
-        }
-        .download-button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Tiagos Addon</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 30px;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1.2em;
+      cursor: pointer;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-    <h1>Tiagos Addon</h1>
-    <div id="buttonContainer" class="button-container"></div>
+  <h1>Tiagos Addon</h1>
+  <div class="button-container" id="buttons">Loading...</div>
 
-    <script>
-        // Fetch the list of .mcaddon files from files.json
-        fetch('./files.json')
-            .then(response => {
-                if (!response.ok) throw new Error('No .mcaddon files found');
-                return response.json();
-            })
-            .then(files => {
-                const buttonContainer = document.getElementById('buttonContainer');
-                files.forEach(file => {
-                    const button = document.createElement('a');
-                    button.href = `./${file}`;
-                    button.download = file;
-                    button.textContent = file.replace('.mcaddon', ''); // Remove .mcaddon from button text
-                    button.className = 'download-button';
-                    buttonContainer.appendChild(button);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching files:', error);
-                const buttonContainer = document.getElementById('buttonContainer');
-                buttonContainer.textContent = 'No .mcaddon files available.';
-            });
-    </script>
+  <script>
+    // Extract GitHub username and repo name from URL
+    const pathParts = window.location.hostname === "127.0.0.1"
+      ? ["user", "repo"] // fallback for local testing
+      : window.location.pathname.split("/").filter(Boolean);
+
+    const username = pathParts[0];
+    const repo = pathParts[1] || username + ".github.io"; // fallback if user.github.io
+
+    const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/`;
+
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to fetch files");
+        return response.json();
+      })
+      .then(files => {
+        const container = document.getElementById("buttons");
+        container.innerHTML = "";
+        let found = false;
+
+        files.forEach(file => {
+          if (file.name.endsWith(".mcaddon")) {
+            found = true;
+            const name = file.name.replace(".mcaddon", "");
+            const button = document.createElement("button");
+            button.textContent = name;
+            button.onclick = () => {
+              window.location.href = file.download_url;
+            };
+            container.appendChild(button);
+          }
+        });
+
+        if (!found) container.innerHTML = "No .mcaddon files found.";
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("buttons").textContent = "Failed to load addons.";
+      });
+  </script>
 </body>
 </html>
